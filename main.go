@@ -73,7 +73,7 @@ func main() {
 	}
 	app.Version = strings.Join(v, "\n")
 
-	root := "/run/runc"
+	root := "@TERMUX_PREFIX@/run/runc"
 	xdgDirUsed := false
 	xdgRuntimeDir := os.Getenv("XDG_RUNTIME_DIR")
 	if xdgRuntimeDir != "" && shouldHonorXDGRuntimeDir() {
