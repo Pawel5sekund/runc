@@ -25,12 +25,12 @@ func (s *CpusetGroup) Apply(path string, r *cgroups.Resources, pid int) error {
 
 func (s *CpusetGroup) Set(path string, r *cgroups.Resources) error {
 	if r.CpusetCpus != "" {
-		if err := cgroups.WriteFile(path, "cpuset.cpus", r.CpusetCpus); err != nil {
+		if err := cgroups.WriteFile(path, "cpus", r.CpusetCpus); err != nil {
 			return err
 		}
 	}
 	if r.CpusetMems != "" {
-		if err := cgroups.WriteFile(path, "cpuset.mems", r.CpusetMems); err != nil {
+		if err := cgroups.WriteFile(path, "mems", r.CpusetMems); err != nil {
 			return err
 		}
 	}
@@ -82,7 +82,7 @@ func getCpusetStat(path string, file string) ([]uint16, error) {
 func (s *CpusetGroup) GetStats(path string, stats *cgroups.Stats) error {
 	var err error
 
-	stats.CPUSetStats.CPUs, err = getCpusetStat(path, "cpuset.cpus")
+	stats.CPUSetStats.CPUs, err = getCpusetStat(path, "cpus")
 	if err != nil && !errors.Is(err, os.ErrNotExist) {
 		return err
 	}
@@ -92,7 +92,7 @@ func (s *CpusetGroup) GetStats(path string, stats *cgroups.Stats) error {
 		return err
 	}
 
-	stats.CPUSetStats.Mems, err = getCpusetStat(path, "cpuset.mems")
+	stats.CPUSetStats.Mems, err = getCpusetStat(path, "mems")
 	if err != nil && !errors.Is(err, os.ErrNotExist) {
 		return err
 	}
@@ -171,10 +171,10 @@ func (s *CpusetGroup) ApplyDir(dir string, r *cgroups.Resources, pid int) error 
 }
 
 func getCpusetSubsystemSettings(parent string) (cpus, mems string, err error) {
-	if cpus, err = cgroups.ReadFile(parent, "cpuset.cpus"); err != nil {
+	if cpus, err = cgroups.ReadFile(parent, "cpus"); err != nil {
 		return
 	}
-	if mems, err = cgroups.ReadFile(parent, "cpuset.mems"); err != nil {
+	if mems, err = cgroups.ReadFile(parent, "mems"); err != nil {
 		return
 	}
 	return cpus, mems, nil
@@ -207,7 +207,7 @@ func cpusetEnsureParent(current string) error {
 	return cpusetCopyIfNeeded(current, parent)
 }
 
-// cpusetCopyIfNeeded copies the cpuset.cpus and cpuset.mems from the parent
+// cpusetCopyIfNeeded copies the cpus and mems from the parent
 // directory to the current directory if the file's contents are 0
 func cpusetCopyIfNeeded(current, parent string) error {
 	currentCpus, currentMems, err := getCpusetSubsystemSettings(current)
@@ -220,12 +220,12 @@ func cpusetCopyIfNeeded(current, parent string) error {
 	}
 
 	if isEmptyCpuset(currentCpus) {
-		if err := cgroups.WriteFile(current, "cpuset.cpus", parentCpus); err != nil {
+		if err := cgroups.WriteFile(current, "cpus", parentCpus); err != nil {
 			return err
 		}
 	}
 	if isEmptyCpuset(currentMems) {
-		if err := cgroups.WriteFile(current, "cpuset.mems", parentMems); err != nil {
+		if err := cgroups.WriteFile(current, "mems", parentMems); err != nil {
 			return err
 		}
 	}

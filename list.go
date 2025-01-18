@@ -46,7 +46,7 @@ var listCommand = cli.Command{
 	ArgsUsage: `
 
 Where the given root is specified via the global option "--root"
-(default: "/run/runc").
+(default: "@TERMUX_PREFIX@/tmp/runc").
 
 EXAMPLE 1:
 To list containers created via the default "--root":
