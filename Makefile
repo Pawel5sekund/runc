@@ -1,4 +1,4 @@
-SHELL = /data/data/com.termux/files/usr/bin/bash
+SHELL = /bin/bash
 
 CONTAINER_ENGINE := docker
 GO ?= go
