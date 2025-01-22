@@ -399,6 +399,7 @@ func syncParentReady(pipe *syncSocket) error {
 		return err
 	}
 	// Wait for parent to give the all-clear.
+	logrus.Debugf("syncParentReady: return readSync(pipe, procRun)")
 	return readSync(pipe, procRun)
 }
 
@@ -411,6 +412,7 @@ func syncParentHooks(pipe *syncSocket) error {
 		return err
 	}
 	// Wait for parent to give the all-clear.
+	logrus.Debugf("syncParentHooks: return readSync(pipe, procRun)")
 	return readSync(pipe, procHooksDone)
 }
 
@@ -435,6 +437,7 @@ func syncParentSeccomp(pipe *syncSocket, seccompFd int) error {
 		return err
 	}
 	// Wait for parent to tell us they've grabbed the seccompfd.
+	logrus.Debugf("syncParentSeccomp: return readSync(pipe, procRun)")
 	return readSync(pipe, procSeccompDone)
 }
 

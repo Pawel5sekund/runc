@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/data/data/com.termux/files/usr/bin/bash
 set -e -u
 
 [ -t 1 ] || NO_COLOR=1

@@ -48,10 +48,10 @@ func sealMemfd(f **os.File) error {
 	// to work on older kernels.
 	fd := (*f).Fd()
 	// F_SEAL_FUTURE_WRITE -- Linux 5.1
-	_, _ = unix.FcntlInt(fd, unix.F_ADD_SEALS, unix.F_SEAL_FUTURE_WRITE)
+	//_, _ = unix.FcntlInt(fd, unix.F_ADD_SEALS, unix.F_SEAL_FUTURE_WRITE)
 	// F_SEAL_EXEC -- Linux 6.3
-	const F_SEAL_EXEC = 0x20 //nolint:revive // this matches the unix.* name
-	_, _ = unix.FcntlInt(fd, unix.F_ADD_SEALS, F_SEAL_EXEC)
+	//const F_SEAL_EXEC = 0x20 //nolint:revive // this matches the unix.* name
+	//_, _ = unix.FcntlInt(fd, unix.F_ADD_SEALS, F_SEAL_EXEC)
 	// Apply all original memfd seals.
 	_, err := unix.FcntlInt(fd, unix.F_ADD_SEALS, baseMemfdSeals)
 	return os.NewSyscallError("fcntl(F_ADD_SEALS)", err)

@@ -7,3 +7,5 @@ man/man8
 release
 Vagrantfile
 .vagrant
+.gitignore
+container/file.tar

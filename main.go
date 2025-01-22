@@ -14,7 +14,7 @@ import (
 	_ "github.com/opencontainers/runc/libcontainer/cgroups/devices"
 	"github.com/opencontainers/runc/libcontainer/seccomp"
 	"github.com/opencontainers/runtime-spec/specs-go"
-
+	
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
 )
@@ -73,7 +73,7 @@ func main() {
 	}
 	app.Version = strings.Join(v, "\n")
 
-	root := "@TERMUX_PREFIX@/tmp/runc"
+	root := "/data/runc"
 	xdgDirUsed := false
 	xdgRuntimeDir := os.Getenv("XDG_RUNTIME_DIR")
 	if xdgRuntimeDir != "" && shouldHonorXDGRuntimeDir() {

@@ -1,4 +1,4 @@
-SHELL = /bin/bash
+SHELL = /data/data/com.termux/files/usr/bin/bash
 
 CONTAINER_ENGINE := docker
 GO ?= go
@@ -34,7 +34,7 @@ GO_BUILDMODE :=
 
 GO_BUILD := $(GO) build $(TRIMPATH) $(GO_BUILDMODE) \
 	$(EXTRA_FLAGS) -tags "$(BUILDTAGS)" \
-	-ldflags "$(LDFLAGS_COMMON) $(EXTRA_LDFLAGS)"
+	-ldflags "$(LDFLAGS_COMMON) $(EXTRA_LDFLAGS)" -gcflags "all=-N -l" -buildvcs=false
 
 GO_BUILDMODE_STATIC :=
 LDFLAGS_STATIC := -extldflags -static

@@ -127,6 +127,7 @@ func prepareRootfs(pipe *syncSocket, iConfig *initConfig) (err error) {
 			if err := writeSyncArg(pipe, procMountPlease, m); err != nil {
 				return fmt.Errorf("failed to request mountfd for %q: %w", m.Source, err)
 			}
+			logrus.Debugf("prepareRootfs: sync, err := readSyncFull(pipe, procMountFd)")
 			sync, err := readSyncFull(pipe, procMountFd)
 			if err != nil {
 				return fmt.Errorf("mountfd request for %q failed: %w", m.Source, err)

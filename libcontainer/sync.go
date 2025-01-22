@@ -126,6 +126,7 @@ func doReadSync(pipe *syncSocket) (syncT, error) {
 	var sync syncT
 	logrus.Debugf("reading sync")
 	packet, err := pipe.ReadPacket()
+	logrus.Debugf("pipe.ReadPacket() readed")
 	if err != nil {
 		if errors.Is(err, io.EOF) {
 			logrus.Debugf("sync pipe closed")

@@ -232,8 +232,8 @@ func (p *setnsProcess) start() (retErr error) {
 	if err := utils.WriteJSON(p.comm.initSockParent, p.config); err != nil {
 		return fmt.Errorf("error writing config to pipe: %w", err)
 	}
-
 	var seenProcReady bool
+	logrus.Debugf("ierr := parseSync(p.comm.syncSockParent, func(sync *syncT) error {")
 	ierr := parseSync(p.comm.syncSockParent, func(sync *syncT) error {
 		switch sync.Type {
 		case procReady:
@@ -420,10 +420,12 @@ func (p *initProcess) goCreateMountSources(ctx context.Context) (mountSourceRequ
 		// UnlockOSThread() here, to ensure that the Go runtime will kill this
 		// thread once this goroutine returns (ensuring no other goroutines run
 		// in this context).
+		logrus.Debugf("runtime.LockOSThread()")
 		runtime.LockOSThread()
 
 		// Detach from the shared fs of the rest of the Go process in order to
 		// be able to CLONE_NEWNS.
+		logrus.Debugf("unix.Unshare(unix.CLONE_FS)")
 		if err := unix.Unshare(unix.CLONE_FS); err != nil {
 			err = os.NewSyscallError("unshare(CLONE_FS)", err)
 			errCh <- fmt.Errorf("mount source thread: %w", err)
@@ -431,12 +433,15 @@ func (p *initProcess) goCreateMountSources(ctx context.Context) (mountSourceRequ
 		}
 
 		// Attach to the container's mount namespace.
+		logrus.Debugf("os.Open(fmt.Sprintf(\"/proc/%d/ns/mnt\", p.pid()))")
 		nsFd, err := os.Open(fmt.Sprintf("/proc/%d/ns/mnt", p.pid()))
 		if err != nil {
 			errCh <- fmt.Errorf("mount source thread: open container mntns: %w", err)
 			return
 		}
+		logrus.Debugf("defer nsFd.Close()")
 		defer nsFd.Close()
+		logrus.Debugf("unix.Setns(int(nsFd.Fd()), unix.CLONE_NEWNS)")
 		if err := unix.Setns(int(nsFd.Fd()), unix.CLONE_NEWNS); err != nil {
 			err = os.NewSyscallError("setns", err)
 			errCh <- fmt.Errorf("mount source thread: join container mntns: %w", err)
@@ -446,23 +451,30 @@ func (p *initProcess) goCreateMountSources(ctx context.Context) (mountSourceRequ
 		// No errors during setup!
 		close(errCh)
 		logrus.Debugf("mount source thread: successfully running in container mntns")
-
+		logrus.Debugf("nsHandles := new(userns.Handles)")
 		nsHandles := new(userns.Handles)
+		logrus.Debugf("defer nsHandles.Release()")
 		defer nsHandles.Release()
+		logrus.Debugf("loop:")
 	loop:
 		for {
+			logrus.Debugf("select {")
 			select {
 			case m, ok := <-requestCh:
+				logrus.Debugf("if !ok {")
 				if !ok {
 					break loop
 				}
+				logrus.Debugf("src, err := mountFd(nsHandles, m)")
 				src, err := mountFd(nsHandles, m)
 				logrus.Debugf("mount source thread: handling request for %q: %v %v", m.Source, src, err)
+				logrus.Debugf("responseCh <- response{")
 				responseCh <- response{
 					src: src,
 					err: err,
 				}
 			case <-ctx.Done():
+				logrus.Debugf("break loop")
 				break loop
 			}
 		}
@@ -624,6 +636,7 @@ func (p *initProcess) start() (retErr error) {
 	}
 
 	var seenProcReady bool
+	logrus.Debugf("ierr := parseSync(p.comm.syncSockParent, func(sync *syncT) error {")
 	ierr := parseSync(p.comm.syncSockParent, func(sync *syncT) error {
 		switch sync.Type {
 		case procMountPlease:
